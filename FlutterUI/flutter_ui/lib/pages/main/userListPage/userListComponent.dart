@@ -9,7 +9,6 @@ class UserListComponent implements Component {
     var response = await userService.getAll();
     if (!validationService.showErrors(response.jsonData)) {
       users = response.data;
-
       var user = await tokenService.getUserWithJWT();
       users.remove(users.firstWhere((element) => element.id == user.id));
     }

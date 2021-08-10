@@ -19,59 +19,59 @@ class _UserListUIState extends State<UserListUI>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    getAllUsers();
     WidgetsBinding.instance.addObserver(this);
+
+    getAllUsers();
     signalRService.start("myhub").then((value) {
       tokenService.getUserWithJWT().then((value) {
-        if (mounted) {
-          setState(() {
-            user = value;
-          });
-        }
-        signalRService.invoke("Connect", [value.id]).then((value) {});
+        user = value;
+        if (mounted) setState(() {});
+        signalRService.invoke("Connect", [user.id]);
       });
+    });
+
+    signalRService.on("connectedMessage", (arguments) {
+      print(arguments.first);
+    });
+
+    signalRService.on("disconnectedMessage", (arguments) {
+      print(arguments.first);
     });
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    _lastLifecycleState = state;
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (mounted) {
-      setState(() {});
+      setState(() {
+        _lastLifecycleState = state;
+      });
     }
 
     if (_lastLifecycleState == AppLifecycleState.paused) {
-      print(_lastLifecycleState);
       if (signalRService.getHubConnection() != null) {
-        signalRService.invoke(
-            "Disconnect", [signalRService.getHubConnection().connectionId]);
+        await signalRService.invoke(
+          "Disconnect",
+          [signalRService.getHubConnection().connectionId],
+        );
       }
     }
 
     if (_lastLifecycleState == AppLifecycleState.resumed) {
-      signalRService.start("myhub").then((value) {
-        tokenService.getUserWithJWT().then((value) {
-          signalRService.invoke("Connect", [value.id]).then((value) {});
-        });
-      });
+      await signalRService.start("myhub");
+      var tokenUser = await tokenService.getUserWithJWT();
+      await signalRService.invoke("Connect", [tokenUser.id]);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    signalRService.on("connectedMessage", (arguments) {
-      print(arguments[0]);
-    });
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -106,8 +106,8 @@ class _UserListUIState extends State<UserListUI>
                 itemBuilder: (BuildContext context, int indeks) {
                   return ListTile(
                     leading: Icon(Icons.person),
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
@@ -125,7 +125,6 @@ class _UserListUIState extends State<UserListUI>
 
   @override
   void whenComplete() {
-    // TODO: implement whenComplete
     if (mounted) {
       setState(() {});
     }

@@ -4,7 +4,6 @@ import 'package:flutter_ui/core/utilities/dependencyResolver.dart';
 import 'package:flutter_ui/models/messageModel.dart';
 import 'package:flutter_ui/pages/main/userDetailPage/userDetailComponent.dart';
 import 'package:flutter_ui/pages/main/userListPage/userListUI.dart';
-import 'package:http/http.dart';
 
 class UserDetail extends StatefulWidget {
   final userId;
@@ -14,56 +13,87 @@ class UserDetail extends StatefulWidget {
   _UserDetailState createState() => _UserDetailState();
 }
 
-class _UserDetailState extends State<UserDetail> with UserDetailComponent {
+class _UserDetailState extends State<UserDetail>
+    with UserDetailComponent, WidgetsBindingObserver {
+  AppLifecycleState _lastLifecycleState;
   var controller = TextEditingController();
-  String message = "";
-  UserModel user1;
   var scrollController = ScrollController();
   var txtController = TextEditingController();
+  UserModel user;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     getUser(widget.userId).then((value) {
-      if (user == null) {
+      if (targetUser == null) {
         Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => UserListUI()),
-            (route) => false);
+          context,
+          MaterialPageRoute(builder: (context) => UserListUI()),
+          (route) => false,
+        );
       }
     });
 
     tokenService.getUserWithJWT().then((value) {
-      user1 = value;
-      getUserMessages(widget.userId, user1.id);
+      user = value;
+      getUserMessages(widget.userId, user.id);
+    });
+
+    signalRService.on("connectedMessage", (arguments) {
+      print(arguments.first);
+    });
+
+    signalRService.on("disconnectedMessage", (arguments) {
+      print(arguments.first);
     });
 
     signalRService.on("receiveMessage", (arguments) async {
-      await getUserMessages(widget.userId, user1.id);
-      messages.forEach((element) {
-        print(element.messageValue);
-      });
+      await getUserMessages(widget.userId, user.id);
 
-      print(messages);
-      print("I");
-      scrollController.jumpTo(scrollController.position.maxScrollExtent + 75);
-      setState(() {});
+      setState(() {
+        scrollController.jumpTo(scrollController.position.maxScrollExtent + 75);
+      });
     });
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (mounted) {
+      setState(() {
+        _lastLifecycleState = state;
+      });
+    }
+
+    if (_lastLifecycleState == AppLifecycleState.paused) {
+      if (signalRService.getHubConnection() != null) {
+        await signalRService.invoke(
+          "Disconnect",
+          [signalRService.getHubConnection().connectionId],
+        );
+      }
+    }
+
+    if (_lastLifecycleState == AppLifecycleState.resumed) {
+      await signalRService.start("myhub");
+      var tokenUser = await tokenService.getUserWithJWT();
+      await signalRService.invoke("Connect", [tokenUser.id]);
+    }
+  }
+
+  @override
   void dispose() {
-    // TODO: implement dispose
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return user != null && messages != null
+    return targetUser != null && messages != null
         ? Scaffold(
             appBar: AppBar(
-              title: Text(user.firstName),
+              title: Text(targetUser.firstName),
             ),
             body: SafeArea(
               child: Stack(
@@ -72,7 +102,8 @@ class _UserDetailState extends State<UserDetail> with UserDetailComponent {
                     controller: scrollController,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      bool poster = messages[index].thunderUserId == user.id;
+                      bool poster =
+                          messages[index].thunderUserId == targetUser.id;
                       return Container(
                         padding: EdgeInsets.only(
                             left: 14, right: 14, top: 10, bottom: 10),
@@ -97,9 +128,7 @@ class _UserDetailState extends State<UserDetail> with UserDetailComponent {
                       );
                     },
                     separatorBuilder: (_, i) {
-                      return Divider(
-                        thickness: 2,
-                      );
+                      return SizedBox();
                     },
                   ),
 

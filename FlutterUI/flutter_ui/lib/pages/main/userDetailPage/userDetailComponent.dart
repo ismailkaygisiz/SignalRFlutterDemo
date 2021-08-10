@@ -4,14 +4,14 @@ import 'package:flutter_ui/core/utilities/dependencyResolver.dart';
 import 'package:flutter_ui/models/messageModel.dart';
 
 class UserDetailComponent implements Component {
-  UserModel user;
+  UserModel targetUser;
   List<MessageModel> messages;
 
   Future<void> getUser(int userId) async {
     var response = await userService.getById(userId);
 
     if (!validationService.showErrors(response.jsonData)) {
-      user = response.data;
+      targetUser = response.data;
     }
 
     whenComplete();
@@ -22,7 +22,6 @@ class UserDetailComponent implements Component {
         await messageService.getByUserAndReceiver(userId, receiverId);
 
     if (!validationService.showErrors(response.jsonData)) {
-      print(response.jsonData);
       messages = response.data;
     }
 

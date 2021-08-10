@@ -33,11 +33,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with WidgetsBindingObserver {
   AppLifecycleState _lastLifecycleState;
   String _lang;
-  var connection = signalRService.getHubConnection();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _getTranslates();
@@ -45,20 +43,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     setState(() {
       _lastLifecycleState = state;
     });
 
     if (_lastLifecycleState == AppLifecycleState.paused) {
       if (signalRService.getHubConnection() != null) {
-        signalRService.invoke(
+        await signalRService.invoke(
             "Disconnect", [signalRService.getHubConnection().connectionId]);
       }
     }
