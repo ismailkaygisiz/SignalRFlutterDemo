@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "SignalRFlutterDemo\Business\Business.csproj", "{80FEAE7E-3279-4EE2-8B3C-2484A4B0F9CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "SignalRFlutterDemo\Business\Business.csproj", "{80FEAE7E-3279-4EE2-8B3C-2484A4B0F9CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "SignalRFlutterDemo\Core\Core.csproj", "{3CC71CFB-C4B1-45CD-AE77-79EC6169458A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "SignalRFlutterDemo\Core\Core.csproj", "{3CC71CFB-C4B1-45CD-AE77-79EC6169458A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "SignalRFlutterDemo\DataAccess\DataAccess.csproj", "{ED589752-F7BB-46DB-B4CF-84DFE65B3AAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "SignalRFlutterDemo\DataAccess\DataAccess.csproj", "{ED589752-F7BB-46DB-B4CF-84DFE65B3AAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "SignalRFlutterDemo\Entities\Entities.csproj", "{54D4E681-8AFE-434F-B772-994A307D71A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entities", "SignalRFlutterDemo\Entities\Entities.csproj", "{54D4E681-8AFE-434F-B772-994A307D71A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "SignalRFlutterDemo\WebAPI\WebAPI.csproj", "{BF330293-A857-4299-A8AD-F277EC700082}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "SignalRFlutterDemo\WebAPI\WebAPI.csproj", "{BF330293-A857-4299-A8AD-F277EC700082}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlutterUI", "FlutterUI\FlutterUI.csproj", "{2F3A704D-703D-4F8D-960F-75E5D2DEBCC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlutterUI", "FlutterUI\FlutterUI.csproj", "{2F3A704D-703D-4F8D-960F-75E5D2DEBCC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
